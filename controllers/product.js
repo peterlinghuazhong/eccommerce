@@ -1,58 +1,56 @@
-// import the Movie model
 const Product = require("../models/product");
 
-async function getProducts(category) {
-  // create a empty container for filter
+const getProducts = async (category, page = 1, itemsPerPage = 6) => {
+  // create a container for filter
   let filter = {};
-  // if director exists, then only add it into the filter container
   if (category) {
     filter.category = category;
   }
+  // apply the filters
+  return await Product.find(filter)
+    .limit(itemsPerPage)
+    .skip((page - 1) * itemsPerPage)
+    .sort({ _id: -1 });
+};
 
-  // load theproducts data from Mongodb
-  const products = await Product.find(filter).sort({ _id: -1 });
-  // return theproducts
-  return products;
-}
+const getProduct = async (id) => {
+  return await Product.findById(id);
+};
 
-async function getProduct(id) {
-  // load the  Product data based on id
-  const product = await Product.findById(id);
-  return product;
-}
-
-async function addProduct(name, description, price, category) {
-  // create new movie
+const addProduct = async (name, description, price, category, image) => {
+  // create new product
   const newProduct = new Product({
-    name: name,
-    description: description,
-    price: price,
-    category: category,
+    name,
+    description,
+    price,
+    category,
+    image,
   });
-  // save the new movie into mongodb
-  await newProduct.save(); // clicking the "save" button
+  // save into mongodb
+  await newProduct.save();
   return newProduct;
-}
+};
 
-async function updateProduct(id, name, description, price, category) {
-  return await Product.findByIdAndUpdate(
+const updateProduct = async (id, name, description, price, category, image) => {
+  const updatedProduct = await Product.findByIdAndUpdate(
     id,
     {
-      name: name,
-      description: description,
-      price: price,
-      category: category,
+      name,
+      description,
+      price,
+      category,
+      image,
     },
     {
-      new: true, // return the updated data
+      new: true,
     }
   );
-}
+  return updatedProduct;
+};
 
-async function deleteProduct(id) {
-  // delete the movie
+const deleteProduct = async (id) => {
   return await Product.findByIdAndDelete(id);
-}
+};
 
 module.exports = {
   getProducts,

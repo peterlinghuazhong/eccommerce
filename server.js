@@ -1,9 +1,14 @@
+//  load the enviroment variables
+require("dotenv").config();
 const express = require("express");
 // import mongoose
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 // setup an express app
 const app = express();
+
+app.use(cors());
 
 // setup a middleware to handle JSON request
 app.use(express.json());
@@ -27,8 +32,14 @@ app.get("/", (req, res) => {
 });
 
 // // import all the routers
-const productRouter = require("./routes/product");
-app.use("/products", productRouter);
+const productRoutes = require("./routes/product");
+app.use("/products", productRoutes);
+app.use("/orders", require("./routes/order"));
+app.use("/payment", require("./routes/payment"));
+app.use("/image", require("./routes/image"));
+app.use("/categories", require("./routes/category"));
+// set a folder as a static path
+app.use("/uploads", express.static("uploads"));
 
 // start the express server
 app.listen(5123, () => {
